@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { BOOKING_API } from "../constants/urls";
-import HeaderComponent from "./HeaderComponent";
+import React, {useState, useEffect} from 'react';
+import {BOOKING_API} from '../constants/urls';
+import HeaderComponent from './HeaderComponent';
 import {
   Container,
   Content,
@@ -13,21 +13,21 @@ import {
   Text,
   DatePicker,
   Icon,
-  Button
-} from "native-base";
-import { Col, Row, Grid } from "react-native-easy-grid";
-import { Auth } from "aws-amplify";
+  Button,
+} from 'native-base';
+import {Col, Row, Grid} from 'react-native-easy-grid';
+import {Auth} from 'aws-amplify';
 
 const BookingScreen = props => {
   const [date, setDate] = useState(new Date());
   const [passengers, setPassengers] = useState(1);
   const [basePrice, setBasePrice] = useState(0);
   const [total, setTotal] = useState(0);
-  const [card, setCard] = useState({ cardNumber: "", mm: "", yy: "", cvv: "" });
+  const [card, setCard] = useState({cardNumber: '', mm: '', yy: '', cvv: ''});
 
   const navigation = props.navigation;
-  const { placeId } = props.route.params;
-  let email = "";
+  const {placeId} = props.route.params;
+  let email = '';
 
   useEffect(() => {
     console.log(card);
@@ -43,48 +43,48 @@ const BookingScreen = props => {
 
   const setCardNumber = number => {
     return number
-      .replace(/\s?/g, "")
-      .replace(/(\d{4})/g, "$1 ")
+      .replace(/\s?/g, '')
+      .replace(/(\d{4})/g, '$1 ')
       .trim();
   };
   const bookTicket = () => {
     console.log(card);
-    fetch(BOOKING_API + "/verify_payment", {
+    fetch(BOOKING_API + '/verify_payment', {
       headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json"
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
       },
-      method: "post",
-      body: JSON.stringify(card)
+      method: 'post',
+      body: JSON.stringify(card),
     })
       .then(response => response.json())
       .then(responseJson => {
         if (responseJson.code == 0) {
-          alert("Invalid Card Details");
+          alert('Invalid Card Details');
           return;
         } else if (responseJson.code == 1) {
           const data = {
             userID: email,
             placeID: placeId,
             passengers: passengers,
-            journeyDate: date.toISOString().split("T")[0],
-            cardEnding: card.cardNumber.split(" ")[3],
+            journeyDate: date.toISOString().split('T')[0],
+            cardEnding: card.cardNumber.split(' ')[3],
             basePrice: basePrice,
-            totalPrice: total
+            totalPrice: total,
           };
-          fetch(BOOKING_API + "/book", {
+          fetch(BOOKING_API + '/book', {
             headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json"
+              Accept: 'application/json',
+              'Content-Type': 'application/json',
             },
-            method: "post",
-            body: JSON.stringify(data)
+            method: 'post',
+            body: JSON.stringify(data),
           })
             .then(response => response.json())
             .then(responseJson => {
               console.log(responseJson);
-              props.navigation.navigate("BookingConfirm", {
-                bookingStatus: responseJson
+              props.navigation.navigate('BookingConfirm', {
+                bookingStatus: responseJson,
               });
             });
         }
@@ -93,16 +93,17 @@ const BookingScreen = props => {
   return (
     <Container>
       <HeaderComponent screenName="Booking" />
-      <H3 style={{ padding: 10 }}>Header Three</H3>
-      <Content style={{ padding: 5 }}>
+      <H3 style={{padding: 10}}>Header Three</H3>
+      <Content style={{padding: 5}}>
         <Text>Journey:</Text>
 
-        <Form style={{ paddingVertical: 10 }}>
-          <Grid style={{ paddingBottom: 10 }}>
+        <Form style={{paddingVertical: 10}}>
+          <Grid style={{paddingBottom: 10}}>
             <Col>
               <Item stackedLabel>
                 <Label>Passengers:</Label>
                 <Picker
+                  style={{width: Platform.OS === 'ios' ? undefined : 120}}
                   placeholder="Number of Passengers"
                   note="true"
                   mode="dropdown"
@@ -110,8 +111,7 @@ const BookingScreen = props => {
                   onValueChange={value => {
                     setPassengers(value);
                     setTotal(basePrice * value);
-                  }}
-                >
+                  }}>
                   <Picker.Item label="1" value={1} />
                   <Picker.Item label="2" value={2} />
                   <Picker.Item label="3" value={3} />
@@ -120,27 +120,29 @@ const BookingScreen = props => {
                 </Picker>
               </Item>
             </Col>
-            <Col style={{ paddingVertical: 30, paddingHorizontal: 20 }}>
+            <Col style={{paddingVertical: 30, paddingHorizontal: 20}}>
               <Text> Total: ${total}</Text>
             </Col>
           </Grid>
           <Item inlineLabel>
             <Label>Journey Date</Label>
             <DatePicker
+              defaultDate={new Date()}
               minimumDate={new Date()}
-              maximumDate={new Date(2018, 12, 31)}
-              locale={"en"}
+              locale={'en'}
+              timeZoneOffsetInMinutes={undefined}
+              modalTransparent={false}
+              animationType={'fade'}
+              androidMode={'default'}
               placeHolderText="Select date"
-              textStyle={{ color: "green" }}
-              placeHolderTextStyle={{ color: "#d3d3d3" }}
-              onDateChange={date => {
-                setDate(date);
-              }}
+              textStyle={{color: 'green'}}
+              placeHolderTextStyle={{color: '#d3d3d3'}}
+              onDateChange={date => setDate(date)}
               disabled={false}
             />
           </Item>
 
-          <Text style={{ paddingVertical: 10 }}>Card Details:</Text>
+          <Text style={{paddingVertical: 10}}>Card Details:</Text>
           <Item inlineLabel>
             <Icon active name="card" />
             <Input
@@ -151,7 +153,7 @@ const BookingScreen = props => {
               onChangeText={number => {
                 setCard({
                   ...card,
-                  cardNumber: setCardNumber(number)
+                  cardNumber: setCardNumber(number),
                 });
               }}
             />
@@ -172,10 +174,9 @@ const BookingScreen = props => {
                         onChangeText={m => {
                           setCard({
                             ...card,
-                            mm: m
+                            mm: m,
                           });
-                        }}
-                      ></Input>
+                        }}></Input>
                     </Col>
                     <Col>
                       <Input
@@ -186,10 +187,9 @@ const BookingScreen = props => {
                         onChangeText={y => {
                           setCard({
                             ...card,
-                            yy: y
+                            yy: y,
                           });
-                        }}
-                      ></Input>
+                        }}></Input>
                     </Col>
                   </Row>
                 </Item>
@@ -205,10 +205,9 @@ const BookingScreen = props => {
                     onChangeText={c => {
                       setCard({
                         ...card,
-                        cvv: c
+                        cvv: c,
                       });
-                    }}
-                  ></Input>
+                    }}></Input>
                 </Item>
               </Col>
             </Row>
@@ -231,4 +230,4 @@ const BookingScreen = props => {
   );
 };
 
-export { BookingScreen };
+export {BookingScreen};

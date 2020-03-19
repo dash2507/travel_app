@@ -10,6 +10,7 @@ import {
 import { Auth } from "aws-amplify";
 import { PLACES_API } from "../constants/urls";
 import HeaderComponent from "./HeaderComponent";
+import { Container } from "native-base";
 
 export class HomeScreen extends React.Component {
   constructor(props) {
@@ -17,9 +18,9 @@ export class HomeScreen extends React.Component {
     this.state = { isLoading: false, search: "" };
     this.arrayholder = [];
     this.navigation = this.props.navigation;
-    Auth.currentSession()
-      .then(session => console.log(session))
-      .catch(err => console.error(err));
+    // Auth.currentSession()
+    //   .then(session => console.log(session))
+    //   .catch(err => console.error(err));
   }
   clickPlace = id => {
     this.navigation.navigate("BookingScreen", {
@@ -73,7 +74,7 @@ export class HomeScreen extends React.Component {
   }
   render() {
     return (
-      <View>
+      <Container>
         <HeaderComponent screenName="Search Places" />
         <SearchBar
           round
@@ -86,7 +87,7 @@ export class HomeScreen extends React.Component {
           round="true"
         />
         {this.renderList()}
-      </View>
+      </Container>
     );
   }
 }

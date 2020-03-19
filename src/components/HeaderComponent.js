@@ -1,37 +1,33 @@
-import React from "react";
-import { View, FlatList, ActivityIndicator } from "react-native";
-import { Header, Button, Icon } from "react-native-elements";
-import { Auth } from "aws-amplify";
-import { Updates } from "expo";
-import { useNavigation } from "@react-navigation/native";
+import React from 'react';
+import {
+  Container,
+  Left,
+  Right,
+  Body,
+  Header,
+  Button,
+  Icon,
+  Title,
+} from 'native-base';
+import {Auth} from 'aws-amplify';
+import RNRestart from 'react-native-restart';
 
-const HeaderComponent = ({ screenName }) => {
-  const navigation = useNavigation();
+const HeaderComponent = ({screenName}) => {
   return (
-    <Header
-      leftComponent={
+    <Header>
+      <Body>
+        <Title>{screenName}</Title>
+      </Body>
+      <Right>
         <Button
-          title=""
-          type="clear"
-          onPress={() => navigation.toggleDrawer()}
-          icon={<Icon name="menu" color="white" />}
-        />
-      }
-      centerComponent={{
-        text: screenName,
-        style: { color: "#fff" }
-      }}
-      rightComponent={
-        <Button
-          title=""
-          type="clear"
-          icon={<Icon name="logout" type="simple-line-icon" color="white" />}
+          transparent
           onPress={() => {
-            Auth.signOut().then(() => Updates.reload());
-          }}
-        />
-      }
-    />
+            Auth.signOut().then(() => RNRestart.Restart());
+          }}>
+          <Icon ios="ios-log-out" android="md-log-out" />
+        </Button>
+      </Right>
+    </Header>
   );
 };
 export default HeaderComponent;

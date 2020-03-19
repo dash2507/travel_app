@@ -34,6 +34,8 @@ target 'rn_project' do
   pod 'glog', :podspec => '../node_modules/react-native/third-party-podspecs/glog.podspec'
   pod 'Folly', :podspec => '../node_modules/react-native/third-party-podspecs/Folly.podspec'
 
+  pod 'RCTRestart', :path => '../node_modules/react-native-restart'
+
   target 'rn_projectTests' do
     inherit! :search_paths
     # Pods for testing
