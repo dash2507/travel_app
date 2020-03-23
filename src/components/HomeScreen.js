@@ -84,7 +84,6 @@ export class HomeScreen extends React.Component {
           placeholder="Type Here..."
           value={this.state.search}
           platform="android"
-          round="true"
         />
         {this.renderList()}
       </Container>

@@ -22,10 +22,12 @@ const BookingConfirm = ({route, navigation}) => {
     if (status.code == 1) {
       return (
         <Card
+          transparent
           style={{
             justifyContent: 'center',
             alignItems: 'center',
             backgroundColor: '#dcedc8',
+            borderRadius: 10,
           }}>
           <CardItem style={{backgroundColor: '#dcedc8'}}>
             <Icon
