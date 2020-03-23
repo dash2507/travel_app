@@ -17,6 +17,7 @@ import {
 } from 'native-base';
 import {Col, Row, Grid} from 'react-native-easy-grid';
 import {Auth} from 'aws-amplify';
+import {encrypt, decrypt} from '../constants/ceaser_cipher';
 
 const BookingScreen = props => {
   const [date, setDate] = useState(new Date());
@@ -50,14 +51,11 @@ const BookingScreen = props => {
   const bookTicket = () => {
     console.log(card);
     fetch(BOOKING_API + '/verify_payment', {
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
       method: 'post',
-      body: JSON.stringify(card),
+      body: encrypt(JSON.stringify(card)),
     })
-      .then(response => response.json())
+      .then(response => response.text())
+      .then(responseText => JSON.parse(decrypt(responseText)))
       .then(responseJson => {
         if (responseJson.code == 0) {
           alert('Invalid Card Details');
@@ -73,14 +71,11 @@ const BookingScreen = props => {
             totalPrice: total,
           };
           fetch(BOOKING_API + '/book', {
-            headers: {
-              Accept: 'application/json',
-              'Content-Type': 'application/json',
-            },
             method: 'post',
-            body: JSON.stringify(data),
+            body: encrypt(JSON.stringify(data)),
           })
-            .then(response => response.json())
+            .then(response => response.text())
+            .then(responseText => JSON.parse(decrypt(responseText)))
             .then(responseJson => {
               console.log(responseJson);
               props.navigation.navigate('BookingConfirm', {
