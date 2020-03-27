@@ -25,10 +25,9 @@ const BookingScreen = props => {
   const [basePrice, setBasePrice] = useState(0);
   const [total, setTotal] = useState(0);
   const [card, setCard] = useState({cardNumber: '', mm: '', yy: '', cvv: ''});
-
+  const [email, setEmail] = useState('');
   const navigation = props.navigation;
   const {placeId} = props.route.params;
-  let email = '';
 
   useEffect(() => {
     console.log(card);
@@ -38,7 +37,7 @@ const BookingScreen = props => {
     }
     loadBaseprice();
     Auth.currentUserInfo().then(user => {
-      email = user.attributes.email;
+      setEmail(user.attributes.email);
     });
   }, []);
 
@@ -49,41 +48,48 @@ const BookingScreen = props => {
       .trim();
   };
   const bookTicket = () => {
-    console.log(card);
-    fetch(BOOKING_API + '/verify_payment', {
-      method: 'post',
-      body: encrypt(JSON.stringify(card)),
-    })
-      .then(response => response.text())
-      .then(responseText => JSON.parse(decrypt(responseText)))
-      .then(responseJson => {
-        if (responseJson.code == 0) {
-          alert('Invalid Card Details');
-          return;
-        } else if (responseJson.code == 1) {
-          const data = {
-            userID: email,
-            placeID: placeId,
-            passengers: passengers,
-            journeyDate: date.toISOString().split('T')[0],
-            cardEnding: card.cardNumber.split(' ')[3],
-            basePrice: basePrice,
-            totalPrice: total,
-          };
-          fetch(BOOKING_API + '/book', {
-            method: 'post',
-            body: encrypt(JSON.stringify(data)),
-          })
-            .then(response => response.text())
-            .then(responseText => JSON.parse(decrypt(responseText)))
-            .then(responseJson => {
-              console.log(responseJson);
-              props.navigation.navigate('BookingConfirm', {
-                bookingStatus: responseJson,
+    let token = '';
+
+    Auth.currentSession().then(sess => {
+      token = sess.getIdToken().getJwtToken();
+      console.log("Email---->", email);
+      fetch(BOOKING_API + '/verify_payment', {
+        method: 'post',
+        body: encrypt(JSON.stringify({...card, token: token})),
+      })
+        .then(response => response.text())
+        .then(responseText => JSON.parse(decrypt(responseText)))
+        .then(responseJson => {
+          if (responseJson.code == 0) {
+            alert('Invalid Card Details');
+            return;
+          } else if (responseJson.code == 1) {
+            const data = {
+              userID: email,
+              placeID: placeId,
+              passengers: passengers,
+              journeyDate: date.toISOString().split('T')[0],
+              cardEnding: card.cardNumber.split(' ')[3],
+              basePrice: basePrice,
+              totalPrice: total,
+              token: token,
+            };
+            console.log(card);
+            fetch(BOOKING_API + '/book', {
+              method: 'post',
+              body: encrypt(JSON.stringify(data)),
+            })
+              .then(response => response.text())
+              .then(responseText => JSON.parse(decrypt(responseText)))
+              .then(responseJson => {
+                console.log(responseJson);
+                props.navigation.navigate('BookingConfirm', {
+                  bookingStatus: responseJson,
+                });
               });
-            });
-        }
-      });
+          }
+        });
+    });
   };
   return (
     <Container>
