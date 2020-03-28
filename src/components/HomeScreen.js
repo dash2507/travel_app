@@ -86,7 +86,8 @@ export class HomeScreen extends React.Component {
           onClear={text => this.SearchFilterFunction('')}
           placeholder="Type Here..."
           value={this.state.search}
-          platform="android"
+          lightTheme
+          clearIcon
         />
         {this.renderList()}
       </Container>
